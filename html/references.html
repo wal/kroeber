@@ -20,7 +20,7 @@
   <h4>Loading your own data</h4>
   <p>The application is written in standard R/Shiny, its source code is publically available <a href="https://github.com/wal/kroeber">here</a></p>
   
-  <p>The application can be easily adapted to work with any data in CSV form, that has a column to represent the athlete (`Player Display Name`) and a series of numeric columns to represent variabled. </p>
+  <p>The application can be easily adapted to work with any data in CSV form, that has a column to represent the athlete (`Player Display Name`) and a series of numeric columns to represent variables. </p>
   
   <p>Please feel free to get in touch with me at <a href="https://twitter.com/walmc">@walmc</a> if you want help loading your data in. Best to try running the app locally and trying to load your own data in first though!</p>
 </div>
@@ -28,11 +28,12 @@
 
 <div class="container">
   <h2>Limitations</h2>
-  <p>This cluster analysis is about discovery of the dataset to try and determine similiarity, rather than anything particulary scientific or predictive. There is a huge amount of subjective interpretation by the user to determine if the derrived clusters even make sense. That said there are also limitations to this approach .. </p>
-
-  <br />
-  <h4>Athlete data aggregation</h4>
-  <p>The data for simple k-means clustering requires a single 'row' per athlete, so data is averaged for the selected variables and session types. There are more advanced clustering mechanisms (e.g hierarchical) and more advanced approaches to handling this which are outside the scope of this simple prototype. In a private email exchange related to this subject Tyler Bosch made some great suggestions on this subject which I'll ask his permission to share.</p>
+  <p>This cluster analysis is about discovery of the dataset to try and determine similiarity, rather than anything particulary scientific or predictive. There is a huge amount of subjective interpretation by the user to determine if the derrived clusters even make sense. There are also limitations to this approach .. </p>
+  <h4>1. Athlete data aggregation</h4>
+  <p>The data for simple k-means clustering requires a single 'row' per athlete, so data is averaged for the selected variables and session types. There are more advanced clustering mechanisms (e.g hierarchical) and more advanced approaches to handling this which are outside the scope of this simple prototype. Tyler Bosch has some great suggestions on this subject which I'll ask his permission to share.</p>
+  
+  <h4>2. Stability</h4>
+  <p>K-Means is an instable clustering technique in that multiple runs of the same clustering algorithm may yield different results.</p>
 </div>
 
 <div class="container">

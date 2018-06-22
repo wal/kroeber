@@ -18,7 +18,6 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
    
   sidebarLayout(
     sidebarPanel(
-      style = "position:fixed;",
       uiOutput("sessionTypeSelection"),
       uiOutput("metricSelection"),
       sliderInput("k", h4("# Clusters (k)"), min = 1, max = 5, value = 3)
@@ -28,15 +27,15 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
       tabsetPanel(
         tabPanel("Cluster Membership", 
                  br(),
-                 p("K-Means clustering groups \"similar\" athletes together in terms of the chosen metrics and session types."),
+                 p("The clustering groups \"similar\" athletes together in terms of the chosen metrics and session types. The filters in the sidebar can be manipulated to cause a new clustering."),
                  hr(),
-                 h2("Cluster Membership by Principal Component"),
+                 h2("Cluster Membership"),
                  plotOutput("componentsClusterPlot"), 
-                 p("The first 2 principal components of the data describe most of the variance explained in the chosen data and provide a 
-                   rough guide to visualise the relative distances of athletes from each other."),
+                 p("The above plot uses the first 2 principal components of the data (from PCA Analysis) to roughly show the relative distances of athletes from each other 
+                   and how the clustering grouped athletes."),
                  hr(), 
-                 h2("Cluster Membership (Scaled Metric Data)"),
-                 p("The scaled mean metric values per athlete, for the chosen metrics and session types"),
+                 h2("Scaled Metric Data"),
+                 p("The scaled mean metric values per athlete for the chosen metrics and session types are used as input to the K-Means clustering algorithn"),
                  dataTableOutput("clusterTable"),
                  hr(),
                  h2("Metric contribution to cluster definition"),
@@ -46,7 +45,7 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
         tabPanel("Ideal Cluster Count", 
                  br(),
                  p("The Elbow Plot describes the sum of squared error for various cluster sizes. An \"Elbow\" in the line may represent an 
-                   ideal number of clusters for this data."),
+                   ideal number of clusters for this data. The currently chosen k (from the filter in the sidebar) is shown in red."),
                  plotOutput("elbowPlot"),
                  hr(),
                  p("More on this technique can be read here https://datascienceplus.com/finding-optimal-number-of-clusters/")),
