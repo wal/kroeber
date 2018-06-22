@@ -31,7 +31,7 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                  hr(),
                  h2("Cluster Membership"),
                  plotOutput("componentsClusterPlot"), 
-                 p("The above plot uses the first 2 principal components of the data (from PCA Analysis) to roughly show the relative distances of athletes from each other 
+                 p("The above plot uses the first 2 principal components of the data (from PCA Analysis) to roughly show the relative similarity of athletes from each other 
                    and how the clustering grouped athletes."),
                  hr(), 
                  h2("Scaled Metric Data"),
