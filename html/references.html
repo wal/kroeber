@@ -1,0 +1,80 @@
+<div class="container">
+  <h2>Data</h2>
+  <table class="table table-bordered">
+    <thead>
+    <tr>
+      <th>Dataset</th>
+      <th>file</th>
+      <th>Description</th>
+    </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>STATSports</td>
+        <td><a href="https://raw.githubusercontent.com/wal/kroeber/master/data/statsports.csv">statsports.csv</a></td>
+        <td>A generated dataset in the STATSports export format. Thanks to <a href="https://twitter.com/craigmstewart">Craig Stewart</a> for the help here</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <h4>Loading your own data</h4>
+  <p>The application is written in standard R/Shiny, its source code is publically available <a href="https://github.com/wal/kroeber">here</a></p>
+  
+  <p>The application can be easily adapted to work with any data in CSV form, that has a column to represent the athlete (`Player Display Name`) and a series of numeric columns to represent variabled. </p>
+  
+  <p>Please feel free to get in touch with me at <a href="https://twitter.com/walmc">@walmc</a> if you want help loading your data in. Best to try running the app locally and trying to load your own data in first though!</p>
+</div>
+
+
+<div class="container">
+  <h2>Limitations</h2>
+  <p>This cluster analysis is about discovery of the dataset to try and determine similiarity, rather than anything particulary scientific or predictive. There is a huge amount of subjective interpretation by the user to determine if the derrived clusters even make sense. That said there are also limitations to this approach .. </p>
+
+  <br />
+  <h4>Athlete data aggregation</h4>
+  <p>The data for simple k-means clustering requires a single 'row' per athlete, so data is averaged for the selected variables and session types. There are more advanced clustering mechanisms (hierarchical) and more advanced approaches to handling this which are outside the scope of this simple prototype. In a private email exchange related to this subject Tyler Bosch made some great suggestions on this subject which I'll ask his permission to share.</p>
+</div>
+
+<div class="container">
+  <h2>Source Code & Contributions / Collaboration</h2>
+  <p>This dashboard is written in R/Shiny, its source code is publically available <a href="https://github.com/wal/kroeber">here</a></p>
+  <p>It would be great to have some contributions / updates code updates by others, especially if you are learning R/shiny.</p>
+</div>
+
+<div class="container">
+  <h2>References</h2>
+  <table class="table table-bordered">
+    <tbody>
+      
+      <tr>
+        <td><a href="https://www.guru99.com/r-k-means-clustering.html">K-means Clustering in R with Example</a>
+        <p>Guru99</p>
+        </td>
+      </tr>
+
+      
+      <tr>
+        <td><a href="https://www.r-bloggers.com/computing-and-visualizing-pca-in-r/">Computing and visualizing PCA in R November 28, 2013</a>
+        <p>Thiago G. Martins</p>
+        </td>
+      </tr>
+      
+      <tr>
+        <td><a href="https://www.datacamp.com/community/tutorials/k-means-clustering-r">K-Means Clustering in R Tutorial</a>
+        <p>Sejal Jaiswal - Datacamp</p>
+        </td>
+      </tr>
+      
+    </tbody>
+    </table>
+</div>
+
+
+<div class="container">
+  <h2>Thanks!</h2>
+  <p> Thanks to the following for their ideas & feedback</p>
+  <ul>
+    <li><a href="https://twitter.com/TylerAbosch">Tyler Bosch</a></li>
+    <li><a href="https://twitter.com/eoin_cunniffe">Eoin Cunniffe</a></li>
+  </ul>
+</div>

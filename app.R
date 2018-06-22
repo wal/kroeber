@@ -1,13 +1,18 @@
+library(tidyverse)
 library(shiny)
 library(shinythemes)
 library(ggthemes)
 library(scales)
 library(DT)
-library(tidyr)
 
-# Define UI for application that draws a histogram
+
+set.seed(10)
+
+################
+# Application UI
+################
 ui <- fluidPage(theme = shinytheme("cosmo"),
-  # Application title
+  
   titlePanel("GPS Data : K-Means/PCA Cluster Analysis"),
    
   sidebarLayout(
@@ -26,19 +31,25 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                  hr(),
                  h2("Cluster Membership by Principal Component"),
                  plotOutput("componentsClusterPlot"), 
-                 p("The first 2 principal components of the data describe most of the variance explained in the chosen data and provide a rough guide to visualise the relative distances of athletes from each other. The PCA tab has more information about the PCA Analysis and explained variance."),
+                 p("The first 2 principal components of the data describe most of the variance explained in the chosen data and provide a 
+                   rough guide to visualise the relative distances of athletes from each other. The PCA tab has more information about the 
+                   PCA Analysis and explained variance."),
                  hr(), 
                  h2("Cluster Membership (Scaled Metric Data)"),
                  p("The scaled mean metric values per athlete, for the chosen metrics and session types"),
                  dataTableOutput("clusterTable"),
                  hr(),
                  h2("Metric contribution to cluster definition"),
-                 p("The contributions that low/high values of each metric contributed to the definition of the clusters. This should provide a clue as to what sorts of athletes were clustered together (e.g high distance athletes in a particular cluster)"),
+                 p("The contributions that low/high values of each metric contributed to the definition of the clusters. This should provide 
+                   a clue as to what sorts of athletes were clustered together (e.g high distance athletes in a particular cluster)"),
                  plotOutput("centersPlot")),
-        tabPanel("Cluster Size", 
+        tabPanel("Ideal Cluster Size", 
                  br(),
-                 p("The Elbow Plot describes the sum of squared error for various cluster sizes. An \"Elbow\" in the line may represent an ideal number of clusters for this data."),
-                 plotOutput("elbowPlot")),
+                 p("The Elbow Plot describes the sum of squared error for various cluster sizes. An \"Elbow\" in the line may represent an 
+                   ideal number of clusters for this data."),
+                 plotOutput("elbowPlot"),
+                 hr(),
+                 p("More on this technique can be read here https://datascienceplus.com/finding-optimal-number-of-clusters/")),
         tabPanel("Raw Data", dataTableOutput("rawDataTable")),
         tabPanel("Information", includeHTML("html/references.html"))
       )
@@ -46,11 +57,14 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
   )
 )
 
-# Define server logic required to draw a histogram
+######################
+# Application Server
+######################
 server <- function(input, output) {
   
   data <- read_csv('data/statsports.csv')
   
+  # Data filtered by selected session type
   filtered_data <- reactive({
     
     if(input$session_type == 'All') {
@@ -60,8 +74,9 @@ server <- function(input, output) {
     }
   })
   
+  # Per athlete data, aggregated (mean) and scaled
   scaled_per_athlete_data <- reactive({
-    
+    print("SEL DATA")
     filtered_data() %>% 
       select(c(`Player Display Name`, input$metric_names)) %>%
       group_by(`Player Display Name`) %>% 
@@ -69,18 +84,23 @@ server <- function(input, output) {
       mutate_if(is.numeric, scale)
     })
   
+  # Available metrics from the dataset
   metrics <- reactive({
     select_if(data, is.numeric) %>% 
       names() %>% 
       sort()
   })
   
+  # Available GPS session types from the dataset (uses Type column)
   session_types <- reactive({
     unique(data$Type) %>% sort()
   })
   
+  # The K-Means model using the selected number value for k and the scaled per-athlete data
   k_means_model <- reactive({
-    model_data <- scaled_per_athlete_data() %>% select(-c(`Player Display Name`)) 
+    model_data <- scaled_per_athlete_data() %>% 
+      select(-c(`Player Display Name`))  # Remove the athlete name as k-means can only be done on numeric data
+    
     kmeans(model_data, centers = input$k)
   })
   
@@ -95,32 +115,48 @@ server <- function(input, output) {
     selectInput("session_type", h4("Session Types"), choices = c("All", session_types()), selected = "All")
   })
   
-  output$elbowPlot <- renderPlot({
-    
+  # Data for the elbow plot
+  elbowData <- reactive({
     data <- scaled_per_athlete_data() %>% 
       select(-c(`Player Display Name`))
     
+    # Calculate the k-means model and error for a range of values of k
     tot_withinss <- map_dbl(1:10, function(k) {
       model <- kmeans(data, centers = k)
       model$tot.withinss
     })
     
-    data.frame(k = 1:10, tot_withinss = tot_withinss) %>% 
-      ggplot(aes(k, tot_withinss)) + 
+    # re-assemble a dataframe and plot the elbow plot
+    data.frame(k = 1:10, tot_withinss = tot_withinss)
+  })
+  
+  # A PCA Elbow plot of number of clusters v total squared error. Used to determine an 'ideal' number of clusters for this data
+  output$elbowPlot <- renderPlot({
+      ggplot(elbowData(), aes(k, tot_withinss)) + 
       geom_line() +
+      geom_vline(xintercept = input$k, color = "red") +
       scale_x_continuous(breaks = 1:10) +
       ylab("Total Sum of Squared Error ") + 
       xlab("# Clusters (k)") +
       theme_minimal()
    })
   
+  # A plot to show relative distances between athletes using the first two components from PCA
   output$componentsClusterPlot <- renderPlot({
+    
+    # Ignore this. It is used to suppress an error on startup of the app
+    if(is.null(input$session_type)) {
+      return(NULL)
+    }
     
     data <- scaled_per_athlete_data() %>% select(-c(`Player Display Name`))
     
+    # PCA Analysis
     pca <- prcomp(data, center = FALSE, scale = FALSE)
+    
     model <- k_means_model()
     
+    # Bind together the k-means derrived clusters, the PCA values per component and the original scaled athlete data to plot the scatter plot
     cbind(scaled_per_athlete_data(), pca$x, model$cluster) %>%
       ggplot(aes(PC1, PC2, label = `Player Display Name`, color = factor(model$cluster))) + 
         geom_point(size=4, alpha = 0.80) + 
@@ -129,7 +165,14 @@ server <- function(input, output) {
         theme_minimal() 
   })
   
+  # Table of the k-means derrived cluster membership
   output$clusterTable <- renderDataTable({
+    
+    # Ignore this. It is used to suppress an error on startup of the app
+    if(is.null(input$session_type)) {
+      return(NULL)
+    }
+    
     data <- scaled_per_athlete_data()
     
     data$cluster <- k_means_model()$cluster
@@ -140,6 +183,7 @@ server <- function(input, output) {
       datatable(options = list(paging = FALSE, searching = FALSE), rownames= FALSE)
   })
   
+  # Plot to define the influence particular GPS metrics have on the cluster definitions
   output$centersPlot <- renderPlot({
     centers_df <- as.data.frame(k_means_model()$centers) %>% rownames_to_column("cluster")
     gather(centers_df, k = metric, value = value, -cluster) %>%
@@ -151,12 +195,11 @@ server <- function(input, output) {
       theme_minimal()
   })
   
+  # Raw data table
   output$rawDataTable <- renderDataTable({
     filtered_data() %>% datatable(options = list(paging = FALSE, searching = FALSE), rownames= FALSE)
   })
 }
-
-
 
 # Run the application 
 shinyApp(ui = ui, server = server)
