@@ -4,6 +4,7 @@ library(shinythemes)
 library(ggthemes)
 library(scales)
 library(DT)
+library(readr)
 
 
 set.seed(10)
@@ -32,8 +33,7 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                  h2("Cluster Membership by Principal Component"),
                  plotOutput("componentsClusterPlot"), 
                  p("The first 2 principal components of the data describe most of the variance explained in the chosen data and provide a 
-                   rough guide to visualise the relative distances of athletes from each other. The PCA tab has more information about the 
-                   PCA Analysis and explained variance."),
+                   rough guide to visualise the relative distances of athletes from each other."),
                  hr(), 
                  h2("Cluster Membership (Scaled Metric Data)"),
                  p("The scaled mean metric values per athlete, for the chosen metrics and session types"),
@@ -43,7 +43,7 @@ ui <- fluidPage(theme = shinytheme("cosmo"),
                  p("The contributions that low/high values of each metric contributed to the definition of the clusters. This should provide 
                    a clue as to what sorts of athletes were clustered together (e.g high distance athletes in a particular cluster)"),
                  plotOutput("centersPlot")),
-        tabPanel("Ideal Cluster Size", 
+        tabPanel("Ideal Cluster Count", 
                  br(),
                  p("The Elbow Plot describes the sum of squared error for various cluster sizes. An \"Elbow\" in the line may represent an 
                    ideal number of clusters for this data."),
@@ -76,7 +76,6 @@ server <- function(input, output) {
   
   # Per athlete data, aggregated (mean) and scaled
   scaled_per_athlete_data <- reactive({
-    print("SEL DATA")
     filtered_data() %>% 
       select(c(`Player Display Name`, input$metric_names)) %>%
       group_by(`Player Display Name`) %>% 
