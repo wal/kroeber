@@ -1,3 +1,5 @@
+## This is just a scratchpad file so ignore its contents. The application code is located in app.R
+
 rm(list=ls())
 library(tidyverse)
 library(lubridate)
