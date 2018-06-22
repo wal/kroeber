@@ -120,7 +120,7 @@ server <- function(input, output) {
     
     # Calculate the k-means model and error for a range of values of k
     tot_withinss <- map_dbl(1:10, function(k) {
-      model <- kmeans(data, centers = k)
+      model <- kmeans(data, centers = k, nstart = 10)
       model$tot.withinss
     })
     
